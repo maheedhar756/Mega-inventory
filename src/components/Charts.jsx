@@ -10,7 +10,7 @@ import {
   Bar,
   Cell,
 } from "recharts";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, ChevronUp, ChevronDown } from "lucide-react";
 import { cn } from "../lib/utils";
 
 const areaData = [
@@ -38,6 +38,21 @@ const barData = [
   { name: "M12", value: 10 },
 ];
 
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="relative mb-6">
+        <div className="bg-[#c2e5cc] text-[#1e4a2c] px-4 py-2 rounded-xl text-sm font-bold shadow-sm relative z-10 text-center min-w-[100px]">
+          <p className="text-[10px] opacity-70 mb-0.5">{label}</p>
+          <p>{payload[0].value}k</p>
+        </div>
+        <div className="absolute left-1/2 -bottom-1 -translate-x-1/2 w-3 h-3 bg-[#c2e5cc] rotate-45 z-0" />
+      </div>
+    );
+  }
+  return null;
+};
+
 export function WeeklyReport() {
   return (
     <div className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 xl:col-span-2 overflow-hidden">
@@ -48,7 +63,7 @@ export function WeeklyReport() {
           </h3>
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex bg-gray-50 rounded-lg p-1">
+          <div className="flex bg-[#EAF8E7] rounded-lg p-1">
             <button className="px-3 py-1 text-xs font-medium bg-white rounded-md shadow-sm text-green-600">
               This week
             </button>
@@ -62,78 +77,97 @@ export function WeeklyReport() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 min-[450px]:grid-cols-3 sm:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-5 gap-0 mb-8 w-full border-b border-gray-50">
         {[
-          { label: "Customers", value: "52k" },
+          { label: "Customers", value: "52k", active: true },
           { label: "Total Orders", value: "3.5k" },
           { label: "Success Orders", value: "2.5k" },
           { label: "Cancelled Order", value: "0.5k" },
           { label: "Revenue", value: "250k" },
         ].map((item, idx) => (
-          <div key={idx} className="text-center min-w-0">
-            <p className="text-lg min-[450px]:text-2xl font-black text-gray-800 truncate">{item.value}</p>
-            <div className="flex flex-col items-center">
-              <span className="text-xs text-gray-400">{item.label}</span>
-              {idx === 0 && (
-                <div className="w-8 h-1 bg-green-500 rounded-full mt-1" />
-              )}
-            </div>
+          <div
+            key={idx}
+            className={cn(
+              "text-center pb-4 transition-all relative border-b-2",
+              item.active ? "border-green-500 bg-linear-to-t from-green-50/50 to-transparent" : "border-gray-100/30"
+            )}
+          >
+            <p className="text-lg sm:text-2xl font-black text-gray-800">
+              {item.value}
+            </p>
+            <span className="text-[10px] sm:text-xs text-gray-400 font-medium">
+              {item.label}
+            </span>
           </div>
         ))}
       </div>
 
       <div className="h-64 mt-4 min-w-0">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={areaData}>
+          <AreaChart
+            data={areaData}
+            margin={{ top: 40, right: 10, left: -20, bottom: 0 }}
+          >
             <defs>
               <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#22c55e" stopOpacity={0.1} />
+                <stop offset="5%" stopColor="#22c55e" stopOpacity={0.15} />
                 <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid
               vertical={false}
-              strokeDasharray="3 3"
-              stroke="#f0f0f0"
+              stroke="#f1f5f9"
+              strokeDasharray="0"
             />
             <XAxis
               dataKey="name"
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 10, fill: "#9ca3af" }}
-              dy={10}
+              tick={(props) => {
+                const { x, y, payload } = props;
+                const isActive = payload.value === "Wed";
+                return (
+                  <text
+                    x={x}
+                    y={y + 15}
+                    textAnchor="middle"
+                    fill={isActive ? "#1f2937" : "#9ca3af"}
+                    style={{
+                      fontSize: "11px",
+                      fontWeight: isActive ? "800" : "500",
+                    }}
+                  >
+                    {payload.value}
+                  </text>
+                );
+              }}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 10, fill: "#9ca3af" }}
+              tick={{ fontSize: 11, fill: "#9ca3af", fontWeight: "500" }}
               tickFormatter={(value) => `${value}k`}
             />
             <Tooltip
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  return (
-                    <div className="bg-black/80 text-white px-3 py-1.5 rounded-lg text-xs font-medium backdrop-blur-sm">
-                      <p>{payload[0].payload.name}</p>
-                      <p className="text-[10px] text-gray-300">{payload[0].payload.value} k</p>
-                    </div>
-                  );
-                }
-                return null;
+              content={<CustomTooltip />}
+              offset={-50}
+              cursor={{
+                stroke: "#22c55e",
+                strokeWidth: 2,
+                strokeDasharray: "4 4",
               }}
-              cursor={{ stroke: "#22c55e", strokeWidth: 1 }}
             />
             <Area
               type="monotone"
               dataKey="value"
               stroke="#22c55e"
-              strokeWidth={2}
+              strokeWidth={3}
               fillOpacity={1}
               fill="url(#colorValue)"
               activeDot={{
-                r: 4,
-                fill: "#22c55e",
-                stroke: "#fff",
+                r: 6,
+                fill: "#fff",
+                stroke: "#22c55e",
                 strokeWidth: 2,
               }}
             />
@@ -149,7 +183,7 @@ export function MonthlySales() {
     <div className="bg-white p-6 rounded-2xl border border-gray-100 flex flex-col">
       <div className="flex justify-between items-start mb-6">
         <div>
-          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
+          <h3 className="text-xs font-bold text-[#6467F2] tracking-wider mb-1">
             Users in last 30 minutes
           </h3>
           <p className="text-xl font-black text-gray-900">21.5k</p>
@@ -159,7 +193,7 @@ export function MonthlySales() {
         </button>
       </div>
 
-      <p className="text-xs font-semibold text-gray-400 mb-4">Monthly Sales</p>
+      <p className="text-xs font-semibold text-gray-400 mb-2">Monthly Sales</p>
 
       <div className="h-16 mb-8 min-w-0">
         <ResponsiveContainer width="100%" height="100%">
@@ -177,7 +211,7 @@ export function MonthlySales() {
       </div>
 
       <div className="space-y-4 flex-1">
-        <div className="flex justify-between items-center text-xs font-bold text-gray-400 uppercase tracking-wider">
+        <div className="flex justify-between items-center text-xs font-bold text-[#23272E] tracking-wider">
           <span>Sales by Kitchen</span>
           <span>Sales</span>
         </div>
@@ -187,7 +221,7 @@ export function MonthlySales() {
             value: "30k",
             color: "#ef4444",
             avatar: "B",
-            change: "+ 25.8%",
+            change: "25.8%",
             type: "up",
           },
           {
@@ -195,7 +229,7 @@ export function MonthlySales() {
             value: "30k",
             color: "#3b82f6",
             avatar: "R",
-            change: "↓ 15.4%",
+            change: "15.8%",
             type: "down",
           },
           {
@@ -203,42 +237,48 @@ export function MonthlySales() {
             value: "25k",
             color: "#10b981",
             avatar: "O",
-            change: "+ 35.8%",
+            change: "35.8%",
             type: "up",
           },
         ].map((kitchen, idx) => (
           <div key={idx} className="flex items-center justify-between">
-            <div className="flex items-center gap-2 min-w-0 flex-1">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
               <div
-                className="w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-white font-bold text-xs"
+                className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center text-white font-bold text-sm"
                 style={{ backgroundColor: kitchen.color }}
               >
                 {kitchen.avatar}
               </div>
-              <span className="text-sm font-semibold text-gray-600 truncate">
-                {kitchen.name}
-              </span>
+              <div className="flex flex-col min-w-0">
+                <span className="text-sm font-bold text-gray-700 leading-tight">
+                  {kitchen.value}
+                </span>
+                <span className="text-[11px] text-gray-400 truncate max-w-[80px]">
+                  {kitchen.name}
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 sm:gap-4 ml-2">
-              <div className="hidden min-[400px]:block w-16 sm:w-24 h-2 bg-gray-50 rounded-full overflow-hidden">
+            <div className="flex items-center gap-4 flex-1 justify-end">
+              <div className="hidden sm:block flex-1 h-1.5 bg-gray-50 rounded-full overflow-hidden max-w-[120px]">
                 <div
-                  className="h-full rounded-full"
+                  className="h-full rounded-full bg-[#6467F2]/80"
                   style={{
-                    backgroundColor: kitchen.color,
                     width: idx === 0 ? "70%" : idx === 1 ? "50%" : "60%",
                   }}
                 />
               </div>
-              <div className="text-right w-12">
-                <p className="text-xs font-black text-gray-900 leading-none">
-                  {kitchen.value}
-                </p>
+              <div className="text-right min-w-[60px]">
                 <p
                   className={cn(
-                    "text-[10px] font-bold mt-1",
+                    "text-[11px] font-bold flex items-center justify-end gap-0.5",
                     kitchen.type === "up" ? "text-green-500" : "text-red-500"
                   )}
                 >
+                  {kitchen.type === "up" ? (
+                    <ChevronUp className="w-2.5 h-2.5" />
+                  ) : (
+                    <ChevronDown className="w-2.5 h-2.5" />
+                  )}
                   {kitchen.change}
                 </p>
               </div>
@@ -247,7 +287,7 @@ export function MonthlySales() {
         ))}
       </div>
 
-      <button className="mt-6 w-full py-2.5 text-blue-600 bg-blue-50/50 rounded-xl text-xs font-bold hover:bg-blue-50 transition-colors border border-blue-100/50">
+      <button className="mt-auto w-80% py-3 text-[#6467F2] bg-white rounded-full text-xs font-bold hover:bg-blue-50 transition-colors border border-[#6467F2]">
         View Insight
       </button>
     </div>

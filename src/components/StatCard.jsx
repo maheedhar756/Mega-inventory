@@ -67,7 +67,7 @@ export function PendingCanceledCard() {
       </div>
       <p className="text-xs text-gray-400 mb-6 text-left">Last 7 days</p>
 
-      <div className="grid grid-cols-2 gap-8">
+      <div className="flex items-center gap-6">
         <div>
           <p className="text-xs font-bold text-gray-400 mb-1">Pending</p>
           <div className="flex items-baseline gap-2">
@@ -75,10 +75,11 @@ export function PendingCanceledCard() {
             <span className="text-xs font-bold text-green-500">user 204</span>
           </div>
         </div>
+        <div className="w-px h-10 bg-[#E5E7EB] items-center justify-center" />
         <div>
           <p className="text-xs font-bold text-gray-400 mb-1">Canceled</p>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-black text-gray-900">94</span>
+            <span className="text-2xl font-black text-red-500">94</span>
             <span className="text-xs font-bold text-red-500 flex items-center gap-1">
               <MoveDown className="w-4 h-4" /> 14.4%
             </span>

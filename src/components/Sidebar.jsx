@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard,
+  House,
   ShoppingCart,
   BadgeCheck,
   Wallet,
@@ -22,7 +22,7 @@ const menuItems = [
   {
     section: "Main menu",
     items: [
-      { icon: LayoutDashboard, label: "Dashboard", active: true },
+      { icon: House, label: "Dashboard", active: true },
       { icon: ShoppingCart, label: "Order Management" },
       { icon: BadgeCheck, label: "Subscription" },
       { icon: Wallet, label: "Payout" },
