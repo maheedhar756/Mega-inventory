@@ -50,7 +50,7 @@ export function Sidebar({ isOpen, onClose }) {
     <>
       <div
         className={cn(
-          "fixed inset-0 bg-black/50 z-50 lg:hidden transition-opacity duration-300",
+          "fixed inset-0 bg-black/40 backdrop-blur-[2px] z-50 lg:hidden transition-all duration-300",
           isOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
@@ -64,26 +64,26 @@ export function Sidebar({ isOpen, onClose }) {
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="p-6 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="size-7 flex items-center justify-center">
-              <img src="./icon.png" alt="icon" />
+        <div className="px-6 py-5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="size-8 flex items-center justify-center bg-gray-50 rounded-lg p-1.5 shadow-sm">
+              <img src="./icon.png" alt="icon" className="w-full h-full object-contain" />
             </div>
-            <span className="font-normal text-lg text-neutral-500">
+            <span className="font-bold text-base text-gray-800 tracking-tight">
               Mega Inventory
             </span>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 lg:hidden"
+            className="p-2 -mr-2 text-gray-400 hover:text-gray-600 lg:hidden bg-gray-50 rounded-full transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto py-2 custom-scrollbar">
           {menuItems.map((group, idx) => (
-            <div key={idx} className="mb-6">
+            <div key={idx} className="mb-5">
               <h3 className="px-6 text-xs font-semibold text-gray-400 tracking-wider mb-2">
                 {group.section}
               </h3>

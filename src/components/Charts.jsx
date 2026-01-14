@@ -241,7 +241,7 @@ export function MonthlySales() {
             type: "up",
           },
         ].map((kitchen, idx) => (
-          <div key={idx} className="flex items-center justify-between">
+          <div key={idx} className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3 min-w-0 flex-1">
               <div
                 className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center text-white font-bold text-sm"
